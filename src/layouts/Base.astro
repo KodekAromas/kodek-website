@@ -406,15 +406,6 @@ const {
     input.style.height = Math.min(input.scrollHeight, 100) + 'px';
   });
 
-  // Netlify Identity redirect for CMS admin
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on('init', user => {
-      if (!user) {
-        window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-      }
-    });
-  }
-
   // Persist chat history in sessionStorage
   window.addEventListener('beforeunload', () => {
     if (chatMessages.length) sessionStorage.setItem('kody-chat', JSON.stringify(chatMessages));
@@ -431,6 +422,11 @@ const {
       });
     } catch {}
   }
+
+  // Expose functions called via inline onclick attributes to global scope
+  window.toggleChat = toggleChat;
+  window.sendMessage = sendMessage;
+  window.closeDrawer = closeDrawer;
 </script>
 </body>
 </html>
