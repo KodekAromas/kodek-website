@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kodek — AI & Technology Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06060a;
+    --bg2: #0c0c12;
+    --bg3: #111118;
+    --text: #f0eee8;
+    --text-muted: #8a8898;
+    --accent: oklch(65% 0.24 280);
+    --accent2: oklch(72% 0.16 198);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 68px;
+    background: rgba(6,6,10,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo-mark {
+    width: 32px; height: 32px;
+    background: var(--text);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-logo-mark img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; filter: none; }
+  .nav-wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    padding: 9px 22px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* HERO */
+  #hero {
+    position: relative;
+    height: 100vh; min-height: 700px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  #hero-canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 0 24px;
+    max-width: 900px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--border-hover);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+  }
+  .hero-tag-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+  .hero-h1 {
+    font-size: clamp(42px, 6vw, 78px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    text-wrap: balance;
+  }
+  .hero-h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto 44px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .hero-actions {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+  }
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 7px;
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+  .btn-ghost {
+    padding: 13px 30px;
+    border: 1px solid var(--border-hover);
+    color: var(--text);
+    border-radius: 7px;
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); background: rgba(124,106,240,0.06); }
+  .hero-scroll {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text-muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    z-index: 2;
+    animation: fadeInUp 1s 1.2s both;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--text-muted), transparent);
+    animation: scrollBounce 2s infinite;
+  }
+  @keyframes scrollBounce {
+    0%,100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.6); opacity: 0.5; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* STATS STRIP */
+  .stats-strip {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex; justify-content: center; gap: 80px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--text-muted); letter-spacing: 0.05em; margin-top: 4px; }
+
+  /* SECTIONS */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 3.5vw, 46px);
+    font-weight: 700; letter-spacing: -0.025em;
+    line-height: 1.1; margin-bottom: 20px;
+    text-wrap: balance;
+  }
+  .section-sub {
+    font-size: 17px; color: var(--text-muted); max-width: 560px;
+    line-height: 1.7; font-weight: 300;
+  }
+  .section-header { margin-bottom: 64px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* VERTICALS */
+  #verticals { background: var(--bg); }
+  .verticals-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .vertical-card {
+    background: var(--bg);
+    padding: 40px 28px;
+    display: flex; flex-direction: column; gap: 18px;
+    transition: background 0.3s;
+    cursor: default;
+  }
+  .vertical-card:hover { background: var(--bg3); }
+  .vertical-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .vi-1 { background: oklch(65% 0.24 280 / 0.12); color: oklch(65% 0.24 280); }
+  .vi-2 { background: oklch(72% 0.16 198 / 0.12); color: oklch(72% 0.16 198); }
+  .vi-3 { background: oklch(75% 0.18 160 / 0.12); color: oklch(75% 0.18 160); }
+  .vi-4 { background: oklch(72% 0.22 30 / 0.12); color: oklch(72% 0.22 30); }
+  .vi-5 { background: oklch(72% 0.18 250 / 0.12); color: oklch(72% 0.18 250); }
+  .vertical-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 600;
+    line-height: 1.3;
+  }
+  .vertical-desc {
+    font-size: 13.5px; color: var(--text-muted);
+    line-height: 1.65; flex: 1;
+  }
+  .vertical-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: auto;
+  }
+  .vtag {
+    font-size: 11px; padding: 3px 9px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* PRODUCTS */
+  #products { background: var(--bg2); }
+  .products-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .product-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .product-card:hover { border-color: var(--border-hover); }
+  .product-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .product-card:hover::before { opacity: 1; }
+  .product-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .badge-ai { background: oklch(65% 0.24 280 / 0.15); color: oklch(65% 0.24 280); }
+  .badge-ar { background: oklch(72% 0.16 198 / 0.15); color: oklch(72% 0.16 198); }
+  .product-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px; font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .product-desc { color: var(--text-muted); font-size: 15px; line-height: 1.7; font-weight: 300; margin-bottom: 32px; }
+  .product-features {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 36px;
+  }
+  .product-features li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .product-features li::before {
+    content: '→';
+    color: var(--accent); flex-shrink: 0; margin-top: 1px;
+  }
+  .product-visual {
+    height: 180px;
+    background: var(--bg3);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em;
+    font-family: monospace;
+    margin-bottom: 32px;
+    overflow: hidden;
+    position: relative;
+  }
+  .product-visual-inner {
+    text-align: center;
+    opacity: 0.5;
+  }
+
+  /* SERVICES */
+  #services { background: var(--bg); }
+  .packages-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .pkg-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 28px;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .pkg-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .pkg-card.featured {
+    border-color: oklch(65% 0.24 280 / 0.4);
+    background: oklch(65% 0.24 280 / 0.04);
+  }
+  .pkg-letter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .pkg-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700; margin-bottom: 8px;
+  }
+  .pkg-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .pkg-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .pkg-price-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+  .pkg-timeline {
+    font-size: 12px; color: var(--text-muted);
+    padding: 8px 12px;
+    background: var(--bg3);
+    border-radius: 6px;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+  .pkg-features {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 9px;
+    flex: 1;
+  }
+  .pkg-features li {
+    font-size: 13.5px; color: var(--text-muted);
+    display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+  }
+  .pkg-features li::before { content: '✓'; color: var(--accent2); flex-shrink: 0; font-weight: 700; }
+  .pkg-cta {
+    margin-top: 32px;
+    display: block; text-align: center;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .pkg-cta:hover { border-color: var(--accent); color: var(--accent); }
+  .pkg-card.featured .pkg-cta {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .pkg-card.featured .pkg-cta:hover { opacity: 0.88; }
+
+  /* PORTFOLIO */
+  #portfolio { background: var(--bg2); }
+  .portfolio-filter {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 40px;
+  }
+  .filter-btn {
+    padding: 7px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: oklch(65% 0.24 280 / 0.06);
+  }
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .portfolio-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg);
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .portfolio-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .portfolio-thumb {
+    height: 200px;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .portfolio-thumb-label {
+    font-family: monospace; font-size: 11px;
+    color: var(--text-muted); letter-spacing: 0.05em; opacity: 0.5;
+    text-align: center;
+  }
+  .portfolio-thumb-overlay {
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.3s;
+    background: oklch(65% 0.24 280 / 0.08);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .portfolio-card:hover .portfolio-thumb-overlay { opacity: 1; }
+  .portfolio-info { padding: 22px 24px; }
+  .portfolio-cat {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cat-ai { color: oklch(65% 0.24 280); }
+  .cat-arvr { color: oklch(72% 0.16 198); }
+  .cat-sim { color: oklch(75% 0.18 160); }
+  .cat-game { color: oklch(72% 0.22 30); }
+  .cat-arch { color: oklch(72% 0.18 250); }
+  .portfolio-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 600; margin-bottom: 6px;
+  }
+  .portfolio-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ABOUT */
+  #about { background: var(--bg); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+  }
+  .about-body {
+    font-size: 17px; color: var(--text-muted); line-height: 1.8; font-weight: 300;
+  }
+  .about-body p + p { margin-top: 20px; }
+  .about-body strong { color: var(--text); font-weight: 500; }
+  .values-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px;
+  }
+  .value-card {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg2);
+  }
+  .value-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 600; margin-bottom: 8px;
+    color: var(--text);
+  }
+  .value-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* CONTACT */
+  #contact { background: var(--bg2); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+  }
+  .contact-form {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 13px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: oklch(65% 0.24 280 / 0.5);
+  }
+  .form-group select { cursor: pointer; appearance: none; }
+  .form-group textarea { resize: vertical; min-height: 120px; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
+  .contact-details { display: flex; flex-direction: column; gap: 32px; }
+  .contact-item-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 4px;
+  }
+  .contact-item-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px; font-weight: 500; color: var(--text);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 48px;
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-copy { font-size: 13px; color: var(--text-muted); }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a {
+    font-size: 13px; color: var(--text-muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--text); }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+  /* Geometric accent lines */
+  .geo-line {
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 1px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 1100px) {
+    .verticals-grid { grid-template-columns: repeat(3, 1fr); }
+    .packages-grid { grid-template-columns: repeat(2, 1fr); }
+    .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 64px 20px; }
+    .stats-strip { padding: 32px 20px; gap: 40px; }
+    .verticals-grid { grid-template-columns: 1fr 1fr; }
+    .products-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .packages-grid { grid-template-columns: 1fr; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    footer { padding: 32px 20px; }
+    .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <div class="nav-logo-mark">
+      <img src="uploads/logo-1777571254206.jpeg" alt="Kodek">
+    </div>
+    <span class="nav-wordmark">KODEK</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#verticals">What We Build</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#careers">Careers</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Start a Project</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      AI &amp; Technology Research Company
+    </div>
+    <h1 class="hero-h1">
+      We Build <em>AI.</em><br>
+      We Build <em>Simulations.</em><br>
+      We Build <em>Worlds.</em>
+    </h1>
+    <p class="hero-sub">
+      Kodek creates intelligent software, immersive AR/VR experiences, physics-based simulations, and interactive games — for industries that demand more from technology.
+    </p>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn-primary">See Our Work</a>
+      <a href="#contact" class="btn-ghost">Start a Project</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Technology Verticals</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">AI+</div>
+    <div class="stat-label">Research-Grade Depth</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Live Products</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">30d</div>
+    <div class="stat-label">MVP Delivery</div>
+  </div>
+</div>
+
+<!-- VERTICALS -->
+<section id="verticals">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Five Technology Domains</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">One company.<br>Infinite applications.</h2>
+      <p class="section-sub">We are not a software agency. We are an AI and technology research company — unified by one capability: intelligent, interactive, and immersive systems.</p>
+    </div>
+    <div class="verticals-grid fade-up">
+      <div class="vertical-card">
+        <div class="vertical-icon vi-1">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" fill="currentColor"/><circle cx="11" cy="3" r="1.5" fill="currentColor" opacity="0.6"/><circle cx="11" cy="19" r="1.5" fill="currentColor" opacity="0.6"/><circle cx="3" cy="11" r="1.5" fill="currentColor" opacity="0.6"/><circle cx="19" cy="11" r="1.5" fill="currentColor" opacity="0.6"/><line x1="11" y1="8" x2="11" y2="4.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="11" y1="14" x2="11" y2="17.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="8" y1="11" x2="4.5" y2="11" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="14" y1="11" x2="17.5" y2="11" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>
+        </div>
+        <div class="vertical-name">AI Research &amp; Software</div>
+        <div class="vertical-desc">Custom AI agents, LLM-powered tools, RAG pipelines, automation workflows, and full-stack AI web applications.</div>
+        <div class="vertical-tags">
+          <span class="vtag">LLM</span><span class="vtag">RAG</span><span class="vtag">Agents</span>
+        </div>
+      </div>
+      <div class="vertical-card">
+        <div class="vertical-icon vi-2">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><polyline points="5,14 8,10 11,12 14,8 17,11" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><rect x="8" y="2" width="6" height="4" rx="1" fill="currentColor" opacity="0.4"/></svg>
+        </div>
+        <div class="vertical-name">Software Simulations</div>
+        <div class="vertical-desc">Physics-based simulations, digital twins, training simulators, and process models for research, industry, and education.</div>
+        <div class="vertical-tags">
+          <span class="vtag">Digital Twin</span><span class="vtag">Physics</span><span class="vtag">WebGL</span>
+        </div>
+      </div>
+      <div class="vertical-card">
+        <div class="vertical-icon vi-3">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/><ellipse cx="11" cy="11" rx="4" ry="9" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="2" y1="11" x2="20" y2="11" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>
+        </div>
+        <div class="vertical-name">AR / VR Experiences</div>
+        <div class="vertical-desc">Web-based and headset AR/VR, spatial computing, immersive walkthroughs, and interactive 3D product configurators.</div>
+        <div class="vertical-tags">
+          <span class="vtag">WebXR</span><span class="vtag">A-Frame</span><span class="vtag">Spatial</span>
+        </div>
+      </div>
+      <div class="vertical-card">
+        <div class="vertical-icon vi-4">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.5"/><rect x="12" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.8"/><rect x="3" y="12" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.8"/><rect x="12" y="12" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.5"/></svg>
+        </div>
+        <div class="vertical-name">Game Development</div>
+        <div class="vertical-desc">Serious games, training simulations, game AI systems, browser-based mini games, and interactive narrative experiences.</div>
+        <div class="vertical-tags">
+          <span class="vtag">Unity</span><span class="vtag">Unreal</span><span class="vtag">WebGL</span>
+        </div>
+      </div>
+      <div class="vertical-card">
+        <div class="vertical-icon vi-5">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><polygon points="11,2 20,8 20,20 2,20 2,8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><rect x="8" y="13" width="6" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="2" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="1" opacity="0.4"/></svg>
+        </div>
+        <div class="vertical-name">Architecture &amp; Built Environment</div>
+        <div class="vertical-desc">ArchViz, AI design assistants, interactive floor plan viewers, and construction technology for the modern built world.</div>
+        <div class="vertical-tags">
+          <span class="vtag">ArchViz</span><span class="vtag">PropTech</span><span class="vtag">3D</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Our Products</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">Research turned product.</h2>
+      <p class="section-sub">Two live products that demonstrate Kodek's ability to take complex AI and 3D technology and make it commercially useful.</p>
+    </div>
+    <div class="products-grid fade-up">
+      <div class="product-card">
+        <span class="product-badge badge-ai">AI · CRM · Real Estate</span>
+
+        <!-- Screenshot carousel -->
+        <div class="product-visual" style="height:220px;padding:0;border-radius:10px;overflow:hidden;position:relative;cursor:pointer;" id="bc-visual">
+          <img id="bc-img" src="uploads/pasted-1777572026269-0.png" style="width:100%;height:100%;object-fit:cover;object-position:top left;transition:opacity 0.4s;" alt="Builders Copilot">
+          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2;">
+            <button class="bc-dot active" onclick="bcSwitch(0)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+            <button class="bc-dot" onclick="bcSwitch(1)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.35);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+            <button class="bc-dot" onclick="bcSwitch(2)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.35);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+            <button class="bc-dot" onclick="bcSwitch(3)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.35);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+          </div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,10,0.5) 0%,transparent 40%);pointer-events:none;"></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+          <button onclick="bcSwitch(3)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Dashboard</button>
+          <button onclick="bcSwitch(0)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Leads CRM</button>
+          <button onclick="bcSwitch(1)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Property Page</button>
+          <button onclick="bcSwitch(2)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">AI Chat</button>
+        </div>
+
+        <div class="product-name">Builders Copilot</div>
+        <div class="product-desc">A full-stack real estate platform — AI-powered property chatbot, intelligent Leads CRM, property listing pages, and an admin dashboard. Built for real estate developers, builders, and sales teams.</div>
+        <ul class="product-features">
+          <li>AI chatbot on every property page — answers buyer questions instantly</li>
+          <li>Leads CRM with status tracking, call logs, and activity timeline</li>
+          <li>Admin dashboard: projects, users, hot/warm lead analytics</li>
+          <li>Virtual tour integration + pricing pages per project</li>
+          <li>White-label available for real estate developers</li>
+        </ul>
+        <a href="#contact" class="btn-ghost" style="display:inline-block;text-decoration:none">Request Demo →</a>
+      </div>
+      <div class="product-card">
+        <span class="product-badge badge-ar">Generative AI · Interior Design</span>
+
+        <!-- Screenshot carousel -->
+        <div class="product-visual" style="height:220px;padding:0;border-radius:10px;overflow:hidden;position:relative;cursor:pointer;" id="rr-visual">
+          <img id="rr-img" src="uploads/pasted-1777572201227-0.png" style="width:100%;height:100%;object-fit:cover;object-position:top center;transition:opacity 0.4s;" alt="AI Room Restyler">
+          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2;">
+            <button class="rr-dot active" onclick="rrSwitch(0)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+            <button class="rr-dot" onclick="rrSwitch(1)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.35);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+            <button class="rr-dot" onclick="rrSwitch(2)" style="width:6px;height:6px;border-radius:50%;border:none;background:rgba(255,255,255,0.35);cursor:pointer;padding:0;transition:opacity 0.2s;"></button>
+          </div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,10,0.5) 0%,transparent 40%);pointer-events:none;"></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+          <button onclick="rrSwitch(0)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Upload & Restyle</button>
+          <button onclick="rrSwitch(1)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Restyle Library</button>
+          <button onclick="rrSwitch(2)" style="font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:100px;background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Output Preview</button>
+        </div>
+
+        <div class="product-name">AI Room Restyler</div>
+        <div class="product-desc">Upload any room photo, choose a style, write a prompt — and get a photorealistic AI-restyled version in seconds. Every output is saved to your personal restyle library and downloadable.</div>
+        <ul class="product-features">
+          <li>Generative AI restyling from any room photo — no camera needed</li>
+          <li>Style presets + custom prompts + strength/guidance controls</li>
+          <li>Personal restyle history library with timestamped generations</li>
+          <li>High-res download of every output</li>
+          <li>White-label for interior designers, furniture brands, real estate</li>
+        </ul>
+        <a href="#contact" class="btn-ghost" style="display:inline-block;text-decoration:none">Request Demo →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Services &amp; Pricing</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">Choose your entry point.</h2>
+      <p class="section-sub">Four engagement tiers — from a rapid research spike to a full immersive technology suite. Every project is fixed-price and timeline-guaranteed.</p>
+    </div>
+    <div class="packages-grid fade-up">
+      <div class="pkg-card">
+        <div class="pkg-letter">Package A</div>
+        <div class="pkg-name">Research Spike</div>
+        <div class="pkg-desc">For teams exploring whether AI, simulation, AR/VR, or games can solve a specific problem.</div>
+        <div class="pkg-price">₹25,000</div>
+        <div class="pkg-price-sub">~$300 · Fixed price</div>
+        <div class="pkg-timeline">⏱ 5–7 business days</div>
+        <ul class="pkg-features">
+          <li>Technical research sprint</li>
+          <li>Feasibility assessment</li>
+          <li>Technology recommendation report</li>
+          <li>Live proof-of-concept prototype</li>
+          <li>30-min review call</li>
+        </ul>
+        <a href="#contact" class="pkg-cta">Get Started</a>
+      </div>
+      <div class="pkg-card">
+        <div class="pkg-letter">Package B</div>
+        <div class="pkg-name">Interactive Prototype</div>
+        <div class="pkg-desc">Working demo — AR experience, simulation, game prototype, or AI tool — ready to validate or present.</div>
+        <div class="pkg-price">₹80,000</div>
+        <div class="pkg-price-sub">~$1,000 · Fixed price</div>
+        <div class="pkg-timeline">⏱ 14–21 business days</div>
+        <ul class="pkg-features">
+          <li>Full-stack interactive prototype</li>
+          <li>Deployed &amp; live link</li>
+          <li>2 rounds of revisions</li>
+          <li>Source code handover</li>
+          <li>Usage documentation</li>
+        </ul>
+        <a href="#contact" class="pkg-cta">Get Started</a>
+      </div>
+      <div class="pkg-card featured">
+        <div class="pkg-letter">Package C · Most Popular</div>
+        <div class="pkg-name">Production-Ready Product</div>
+        <div class="pkg-desc">A production-grade AI app, simulation, or AR/VR experience — ready to ship to real users.</div>
+        <div class="pkg-price">₹1,50,000</div>
+        <div class="pkg-price-sub">~$1,800 · Fixed price</div>
+        <div class="pkg-timeline">⏱ 3–5 weeks</div>
+        <ul class="pkg-features">
+          <li>Full-stack development + auth</li>
+          <li>Admin dashboard</li>
+          <li>Cloud deployment</li>
+          <li>60-day post-launch support</li>
+          <li>Integration with client systems</li>
+          <li>Team training session</li>
+        </ul>
+        <a href="#contact" class="pkg-cta">Get Started</a>
+      </div>
+      <div class="pkg-card">
+        <div class="pkg-letter">Package D</div>
+        <div class="pkg-name">Full Immersive Suite</div>
+        <div class="pkg-desc">A complete AI + immersive technology system for enterprises, real estate developers, and large studios.</div>
+        <div class="pkg-price">₹3,00,000+</div>
+        <div class="pkg-price-sub">~$3,500+ · Custom scope</div>
+        <div class="pkg-timeline">⏱ 5–8 weeks</div>
+        <ul class="pkg-features">
+          <li>AI software + AR/VR or simulation</li>
+          <li>Custom interactive layer</li>
+          <li>Branded deployment</li>
+          <li>90-day support</li>
+          <li>Full source files + team training</li>
+        </ul>
+        <a href="#contact" class="pkg-cta">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Portfolio</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">Built. Deployed. Proven.</h2>
+      <p class="section-sub">A selection of work across all five technology verticals — from AI tools to immersive simulations.</p>
+    </div>
+    <div class="portfolio-filter fade-up">
+      <button class="filter-btn active" onclick="filterPortfolio('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPortfolio('ai', this)">AI Research</button>
+      <button class="filter-btn" onclick="filterPortfolio('arvr', this)">AR / VR</button>
+      <button class="filter-btn" onclick="filterPortfolio('sim', this)">Simulation</button>
+      <button class="filter-btn" onclick="filterPortfolio('game', this)">Game Dev</button>
+      <button class="filter-btn" onclick="filterPortfolio('arch', this)">Architecture</button>
+    </div>
+    <div class="portfolio-grid fade-up" id="portfolio-grid">
+      <div class="portfolio-card" data-cat="arch">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #0c0c18, #111128);">
+          <div class="portfolio-thumb-label">archviz · 3d walkthrough</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:var(--accent);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-arch">Architecture</div>
+          <div class="portfolio-title">Builders Copilot</div>
+          <div class="portfolio-desc">AI assistant for construction professionals. LLM-powered Q&amp;A over project documents.</div>
+        </div>
+      </div>
+      <div class="portfolio-card" data-cat="arvr">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #060c14, #0a1420);">
+          <div class="portfolio-thumb-label">webAR · room restyler</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:var(--accent2);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-arvr">AR / VR</div>
+          <div class="portfolio-title">AI Room Restyler</div>
+          <div class="portfolio-desc">Generative AI + WebAR for real-time room visualization. Before/after comparisons with shareable links.</div>
+        </div>
+      </div>
+      <div class="portfolio-card" data-cat="ai">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #0a0614, #0e0820);">
+          <div class="portfolio-thumb-label">openai api · react · rag</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:var(--accent);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-ai">AI Research</div>
+          <div class="portfolio-title">AI Property Listing Generator</div>
+          <div class="portfolio-desc">GPT-powered tool generating compelling real estate listings from photos and floor plans in seconds.</div>
+        </div>
+      </div>
+      <div class="portfolio-card" data-cat="arch">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #060a10, #0c1018);">
+          <div class="portfolio-thumb-label">three.js · react three fiber</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:oklch(72% 0.18 250);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-arch">Architecture</div>
+          <div class="portfolio-title">3D Floor Plan Visualizer</div>
+          <div class="portfolio-desc">Interactive WebGL floor plan viewer with real-time material switching and measurement tools.</div>
+        </div>
+      </div>
+      <div class="portfolio-card" data-cat="arvr">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #060c10, #081418);">
+          <div class="portfolio-thumb-label">webXR · model-viewer · a-frame</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:var(--accent2);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-arvr">AR / VR</div>
+          <div class="portfolio-title">AR Furniture Placer</div>
+          <div class="portfolio-desc">WebAR experience allowing users to place and visualize 3D furniture in any room using their phone camera.</div>
+        </div>
+      </div>
+      <div class="portfolio-card" data-cat="sim">
+        <div class="portfolio-thumb" style="background: linear-gradient(135deg, #060e08, #081408);">
+          <div class="portfolio-thumb-label">physics simulation · webgl</div>
+          <div class="portfolio-thumb-overlay"><span style="font-size:13px;color:oklch(75% 0.18 160);font-family:'Space Grotesk',sans-serif;font-weight:600">View Project →</span></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-cat cat-sim">Simulation</div>
+          <div class="portfolio-title">Construction Site Simulator</div>
+          <div class="portfolio-desc">Browser-based physics simulation for construction site planning and safety training — deployable anywhere.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up">
+        <div class="section-label">About Kodek</div>
+        <div class="geo-line"></div>
+        <h2 class="section-title">Built for depth.<br>Built for the frontier.</h2>
+        <div class="about-body" style="margin-top:28px;">
+          <p>Kodek (Kodekaromas Technologies Private Limited) is an <strong>AI and technology research company</strong> headquartered in <strong>Bhubaneswar, Odisha</strong>. We build intelligent software, immersive simulations, AR/VR experiences, and interactive games that push the boundaries of what software can do.</p>
+          <p>Our work spans five technology verticals — unified by a single research-oriented identity. We are not a software agency. We are a company that uses artificial intelligence, simulation, and immersive computing to solve real problems across industries.</p>
+          <p>Every research direction at Kodek leads to a <strong>working product or deployable prototype</strong>. We build real AI systems, real simulations, real engines — not wrappers or templates. India-built. Globally competitive.</p>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="values-grid">
+          <div class="value-card">
+            <div class="value-title">Research-grade depth</div>
+            <div class="value-desc">We build real AI systems and simulation engines — not wrappers or off-the-shelf templates.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-title">Breadth with coherence</div>
+            <div class="value-desc">Five verticals. One underlying competency: intelligent, interactive, immersive systems.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-title">Applied, not theoretical</div>
+            <div class="value-desc">Every research direction leads to a working, deployable product.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-title">Globally competitive</div>
+            <div class="value-desc">India-built. The quality of our work is not discounted by geography.</div>
+          </div>
+        </div>
+        <div style="margin-top:32px;padding:28px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);">
+          <div class="section-label" style="margin-bottom:16px">Our Team</div>
+          <div style="font-size:15px;color:var(--text-muted);line-height:1.75;font-weight:300;">Kodek is built by experienced professionals with deep expertise in <strong style="color:var(--text);font-weight:500">AI research</strong>, <strong style="color:var(--text);font-weight:500">game development</strong>, <strong style="color:var(--text);font-weight:500">3D &amp; immersive systems</strong>, and <strong style="color:var(--text);font-weight:500">industry-grade software engineering</strong>. We have worked across research, product, and enterprise — and we bring that depth to every project we take on.</div>
+          <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+            <span class="vtag" style="border-color:oklch(65% 0.24 280 / 0.3);color:oklch(65% 0.24 280);">AI &amp; ML</span>
+            <span class="vtag" style="border-color:oklch(72% 0.22 30 / 0.3);color:oklch(72% 0.22 30);">Game Dev</span>
+            <span class="vtag" style="border-color:oklch(72% 0.16 198 / 0.3);color:oklch(72% 0.16 198);">3D &amp; Simulation</span>
+            <span class="vtag" style="border-color:oklch(75% 0.18 160 / 0.3);color:oklch(75% 0.18 160);">AR / VR</span>
+            <span class="vtag" style="border-color:oklch(72% 0.18 250 / 0.3);color:oklch(72% 0.18 250);">Systems Engineering</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog" style="background:var(--bg);">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Blog</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">Thinking out loud.</h2>
+      <p class="section-sub">Articles, research notes, and technical deep-dives from the Kodek team — on AI, simulation, AR/VR, game systems, and the future of immersive computing.</p>
+    </div>
+    <div class="fade-up" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <article style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2);transition:border-color 0.3s,transform 0.3s;cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.transform=''">
+        <div style="height:140px;background:linear-gradient(135deg,#0a0614,#0e0a20);display:flex;align-items:center;justify-content:center;">
+          <div style="font-family:monospace;font-size:11px;color:var(--text-muted);opacity:0.4;text-align:center;">ai research · technical</div>
+        </div>
+        <div style="padding:24px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:oklch(65% 0.24 280);margin-bottom:8px;">AI Research</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-bottom:10px;line-height:1.35;">Building RAG Pipelines that Actually Work in Production</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Most RAG implementations fail at retrieval quality. Here's how we architect pipelines that hold up under real-world conditions.</div>
+          <div style="font-size:12px;color:var(--text-muted);opacity:0.6;">Coming soon</div>
+        </div>
+      </article>
+
+      <article style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2);transition:border-color 0.3s,transform 0.3s;cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.transform=''">
+        <div style="height:140px;background:linear-gradient(135deg,#060a10,#0c1018);display:flex;align-items:center;justify-content:center;">
+          <div style="font-family:monospace;font-size:11px;color:var(--text-muted);opacity:0.4;text-align:center;">webXR · spatial computing</div>
+        </div>
+        <div style="padding:24px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:oklch(72% 0.16 198);margin-bottom:8px;">AR / VR</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-bottom:10px;line-height:1.35;">Why WebXR Is the Future of Immersive Experiences</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Native apps are expensive and siloed. Web-based AR/VR reaches anyone with a browser — and it's more capable than you think.</div>
+          <div style="font-size:12px;color:var(--text-muted);opacity:0.6;">Coming soon</div>
+        </div>
+      </article>
+
+      <article style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2);transition:border-color 0.3s,transform 0.3s;cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.transform=''">
+        <div style="height:140px;background:linear-gradient(135deg,#060e08,#081408);display:flex;align-items:center;justify-content:center;">
+          <div style="font-family:monospace;font-size:11px;color:var(--text-muted);opacity:0.4;text-align:center;">simulation · physics</div>
+        </div>
+        <div style="padding:24px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:oklch(75% 0.18 160);margin-bottom:8px;">Simulation</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-bottom:10px;line-height:1.35;">Digital Twins for Construction: From Concept to Deployment</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">How we built a browser-based construction site simulator — the technical choices, tradeoffs, and lessons from shipping it.</div>
+          <div style="font-size:12px;color:var(--text-muted);opacity:0.6;">Coming soon</div>
+        </div>
+      </article>
+
+    </div>
+    <div class="fade-up" style="text-align:center;margin-top:40px;">
+      <a href="#contact" class="btn-ghost">Get notified when we publish →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CAREERS -->
+<section id="careers" style="background:var(--bg2);">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Careers</div>
+      <div class="geo-line"></div>
+      <h2 class="section-title">Build the frontier<br>with us.</h2>
+      <p class="section-sub">We are a small, high-output team. We hire for depth — people who obsess over technical craft and want to work on things that don't exist yet.</p>
+    </div>
+
+    <div class="fade-up" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px;">
+
+      <div style="border:1px solid var(--border);border-radius:10px;padding:32px;background:var(--bg);display:flex;flex-direction:column;gap:16px;transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;">AI / ML Engineer</div>
+          <span style="font-size:11px;padding:3px 10px;border-radius:100px;background:oklch(65% 0.24 280 / 0.12);color:oklch(65% 0.24 280);font-weight:600;">Open</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--text-muted);line-height:1.65;">Build LLM pipelines, RAG systems, AI agents, and custom ML models for real commercial products. Experience with Python, PyTorch, and LangChain preferred.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="vtag">Python</span><span class="vtag">LLMs</span><span class="vtag">RAG</span><span class="vtag">PyTorch</span>
+        </div>
+        <a href="mailto:careers@kodek.in" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;font-family:'Space Grotesk',sans-serif;">Apply → careers@kodek.in</a>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:10px;padding:32px;background:var(--bg);display:flex;flex-direction:column;gap:16px;transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;">3D / Game Developer</div>
+          <span style="font-size:11px;padding:3px 10px;border-radius:100px;background:oklch(72% 0.22 30 / 0.12);color:oklch(72% 0.22 30);font-weight:600;">Open</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--text-muted);line-height:1.65;">Build immersive 3D experiences, game systems, and WebGL simulations. Experience with Unity, Unreal, Three.js, or WebXR is a strong advantage.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="vtag">Unity</span><span class="vtag">Three.js</span><span class="vtag">WebXR</span><span class="vtag">WebGL</span>
+        </div>
+        <a href="mailto:careers@kodek.in" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;font-family:'Space Grotesk',sans-serif;">Apply → careers@kodek.in</a>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:10px;padding:32px;background:var(--bg);display:flex;flex-direction:column;gap:16px;transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;">Full-Stack Developer</div>
+          <span style="font-size:11px;padding:3px 10px;border-radius:100px;background:oklch(72% 0.16 198 / 0.12);color:oklch(72% 0.16 198);font-weight:600;">Open</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--text-muted);line-height:1.65;">Ship production-grade web apps, dashboards, and APIs. React, Node.js, and cloud deployment experience required. AI integration experience is a big plus.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="vtag">React</span><span class="vtag">Node.js</span><span class="vtag">AWS</span><span class="vtag">PostgreSQL</span>
+        </div>
+        <a href="mailto:careers@kodek.in" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;font-family:'Space Grotesk',sans-serif;">Apply → careers@kodek.in</a>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:10px;padding:32px;background:var(--bg);display:flex;flex-direction:column;gap:16px;transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;">AR / VR Developer</div>
+          <span style="font-size:11px;padding:3px 10px;border-radius:100px;background:oklch(75% 0.18 160 / 0.12);color:oklch(75% 0.18 160);font-weight:600;">Open</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--text-muted);line-height:1.65;">Design and build spatial computing experiences for web and headset platforms. A-Frame, model-viewer, WebXR, and Meta Quest SDK experience valued.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="vtag">A-Frame</span><span class="vtag">WebXR</span><span class="vtag">Spatial</span><span class="vtag">Meta Quest</span>
+        </div>
+        <a href="mailto:careers@kodek.in" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;font-family:'Space Grotesk',sans-serif;">Apply → careers@kodek.in</a>
+      </div>
+
+    </div>
+
+    <div class="fade-up" style="padding:32px 40px;border:1px solid var(--border);border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;margin-bottom:6px;">Don't see your role?</div>
+        <div style="font-size:14px;color:var(--text-muted);">We're always open to exceptional people. Send your work and tell us what you'd build at Kodek.</div>
+      </div>
+      <a href="mailto:careers@kodek.in" class="btn-primary" style="text-decoration:none;white-space:nowrap;">Write to us →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="fade-up">
+        <div class="section-label">Start a Project</div>
+        <div class="geo-line"></div>
+        <h2 class="section-title">Let's build something you've never seen before.</h2>
+        <div style="margin-top:32px;" class="contact-details">
+          <div>
+            <div class="contact-item-label">Website</div>
+            <div class="contact-item-val">kodek.in</div>
+          </div>
+          <div>
+            <div class="contact-item-label">Location</div>
+            <div class="contact-item-val">Bhubaneswar, Odisha, India</div>
+          </div>
+          <div>
+            <div class="contact-item-label">Company</div>
+            <div class="contact-item-val">Kodekaromas Technologies Pvt. Ltd.</div>
+          </div>
+          <div>
+            <div class="contact-item-label">Engagement</div>
+            <div class="contact-item-val">Fixed-price · Timeline-guaranteed</div>
+          </div>
+          <div>
+            <div class="contact-item-label">Response Time</div>
+            <div class="contact-item-val">Within 24 hours</div>
+          </div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <form class="contact-form" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" name="name" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" placeholder="you@company.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Company / Project</label>
+            <input type="text" name="company" placeholder="Company or project name">
+          </div>
+          <div class="form-group">
+            <label>What do you want to build?</label>
+            <select name="vertical">
+              <option value="">Select a vertical...</option>
+              <option>AI Research &amp; Software</option>
+              <option>Software Simulations</option>
+              <option>AR / VR Experience</option>
+              <option>Game Development</option>
+              <option>Architecture &amp; Built Environment</option>
+              <option>Not sure — let's talk</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tell us about your project</label>
+            <textarea name="message" placeholder="What problem are you solving? What does success look like?"></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="border:none;cursor:pointer;font-size:15px;padding:14px 28px;">Send Message →</button>
+        </form>
+        <div id="form-success" style="display:none;padding:24px;border:1px solid oklch(72% 0.16 198 / 0.3);border-radius:10px;background:oklch(72% 0.16 198 / 0.06);margin-top:20px;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--accent2);margin-bottom:6px;">Message sent.</div>
+          <div style="font-size:14px;color:var(--text-muted);">We'll get back to you within 24 hours.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div class="nav-logo-mark" style="width:24px;height:24px;">
+          <img src="uploads/logo-1777571254206.jpeg" style="width:24px;height:24px;border-radius:50%;">
+        </div>
+        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.08em;">KODEK</span>
+      </div>
+      <div class="footer-copy">© 2026 Kodekaromas Technologies Pvt. Ltd. — AI &amp; Technology Research</div>
+    </div>
+    <div class="footer-links">
+      <a href="#verticals">What We Build</a>
+      <a href="#services">Services</a>
+      <a href="#portfolio">Work</a>
+      <a href="#blog">Blog</a>
+      <a href="#careers">Careers</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- HERO CANVAS: Neural Network Particle Animation ----
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes = [], mouse = { x: -999, y: -999 };
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const NODE_COUNT = 80;
+  const MAX_DIST = 140;
+
+  function makeNode() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.8 + 0.8
+    };
+  }
+  for (let i = 0; i < NODE_COUNT; i++) nodes.push(makeNode());
+
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+  canvas.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+
+  const accentColor = [124, 106, 240];   // violet
+  const accentColor2 = [76, 201, 224];   // cyan
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+
+      // mouse repel
+      const dx = n.x - mouse.x, dy = n.y - mouse.y;
+      const dm = Math.sqrt(dx*dx + dy*dy);
+      if (dm < 80) {
+        const f = (80 - dm) / 80 * 0.5;
+        n.vx += dx / dm * f;
+        n.vy += dy / dm * f;
+      }
+
+      for (let j = i + 1; j < nodes.length; j++) {
+        const m = nodes[j];
+        const ex = m.x - n.x, ey = m.y - n.y;
+        const d = Math.sqrt(ex*ex + ey*ey);
+        if (d < MAX_DIST) {
+          const t = 1 - d / MAX_DIST;
+          const mid = i / nodes.length;
+          const r = Math.round(lerp(accentColor[0], accentColor2[0], mid));
+          const g = Math.round(lerp(accentColor[1], accentColor2[1], mid));
+          const b = Math.round(lerp(accentColor[2], accentColor2[2], mid));
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(m.x, m.y);
+          ctx.strokeStyle = `rgba(${r},${g},${b},${t * 0.25})`;
+          ctx.lineWidth = t * 1.2;
+          ctx.stroke();
+        }
+      }
+
+      const frac = i / nodes.length;
+      const nr = Math.round(lerp(accentColor[0], accentColor2[0], frac));
+      const ng = Math.round(lerp(accentColor[1], accentColor2[1], frac));
+      const nb = Math.round(lerp(accentColor[2], accentColor2[2], frac));
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${nr},${ng},${nb},0.7)`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ---- SCROLL ANIMATIONS ----
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ---- PORTFOLIO FILTER ----
+function filterPortfolio(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.portfolio-card').forEach(card => {
+    const match = cat === 'all' || card.dataset.cat === cat;
+    card.style.display = match ? '' : 'none';
+  });
+}
+
+// ---- AI ROOM RESTYLER SCREENSHOT SWITCHER ----
+const rrImages = [
+  'uploads/pasted-1777572201227-0.png',
+  'uploads/pasted-1777572244092-0.png',
+  'uploads/pasted-1777572256838-0.png',
+];
+let rrCurrent = 0;
+let rrInterval = setInterval(() => rrSwitch((rrCurrent + 1) % 3), 3500);
+
+function rrSwitch(idx) {
+  clearInterval(rrInterval);
+  rrCurrent = idx;
+  const img = document.getElementById('rr-img');
+  img.style.opacity = 0;
+  setTimeout(() => {
+    img.src = rrImages[idx];
+    img.style.opacity = 1;
+  }, 200);
+  document.querySelectorAll('.rr-dot').forEach((d, i) => {
+    d.style.background = i === idx ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)';
+  });
+  rrInterval = setInterval(() => rrSwitch((rrCurrent + 1) % 3), 3500);
+}
+
+// ---- BUILDERS COPILOT SCREENSHOT SWITCHER ----
+const bcImages = [
+  'uploads/pasted-1777571880300-0.png',
+  'uploads/pasted-1777571946926-0.png',
+  'uploads/pasted-1777571968172-0.png',
+  'uploads/pasted-1777572026269-0.png',
+];
+let bcCurrent = 0;
+let bcInterval = setInterval(() => bcSwitch((bcCurrent + 1) % 4), 3000);
+
+function bcSwitch(idx) {
+  clearInterval(bcInterval);
+  bcCurrent = idx;
+  const img = document.getElementById('bc-img');
+  img.style.opacity = 0;
+  setTimeout(() => {
+    img.src = bcImages[idx];
+    img.style.opacity = 1;
+  }, 200);
+  document.querySelectorAll('.bc-dot').forEach((d, i) => {
+    d.style.background = i === idx ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)';
+  });
+  bcInterval = setInterval(() => bcSwitch((bcCurrent + 1) % 4), 3000);
+}
+
+// ---- FORM SUBMIT ----
+async function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const data = new FormData(form);
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/sales@kodek.in', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    const json = await res.json();
+    if (json.success === 'true' || json.success === true || res.ok) {
+      document.getElementById('form-success').style.display = 'block';
+      form.style.display = 'none';
+    } else {
+      btn.textContent = 'Failed — try again';
+      btn.disabled = false;
+    }
+  } catch {
+    btn.textContent = 'Failed — try again';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
