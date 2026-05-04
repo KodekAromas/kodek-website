@@ -985,12 +985,12 @@ async function handleSubmit(e) {
       removeTyping();
 
       if (res.status === 429) {
-        addMsg('bot', 'You're sending messages too fast. Please wait a moment and try again.');
+        addMsg('bot', "You're sending messages too fast. Please wait a moment and try again.");
       } else if (!res.ok) {
         addMsg('bot', 'Something went wrong. Please try again or reach us at sales@kodek.in.');
       } else {
         const data = await res.json();
-        const reply = data.content || 'Sorry, I didn't get a response. Try again!';
+        const reply = data.content || "Sorry, I didn't get a response. Try again!";
         addMsg('bot', reply);
         history.push({ role: 'assistant', content: reply });
       }
