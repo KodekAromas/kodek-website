@@ -1,0 +1,437 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Kodek — AI & Technology Research',
+  description = 'Kodek creates intelligent software, immersive AR/VR experiences, physics-based simulations, and interactive games for industries that demand more from technology.',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content={description}>
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:type" content="website">
+<link rel="icon" type="image/jpeg" href="/uploads/logo-1777571254206.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js" is:inline></script>
+<style is:global>
+  :root {
+    --bg: #06060a;
+    --bg2: #0c0c12;
+    --bg3: #111118;
+    --text: #f0eee8;
+    --text-muted: #8a8898;
+    --accent: oklch(65% 0.24 280);
+    --accent2: oklch(72% 0.16 198);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 68px;
+    background: rgba(6,6,10,0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-mark { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+  .nav-logo-mark img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+  .nav-wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.08em; color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    padding: 9px 22px; background: var(--accent); color: #fff;
+    border-radius: 6px; text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+  }
+  .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+  .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 1px; transition: transform 0.25s, opacity 0.25s; }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-drawer {
+    display: none; position: fixed; top: 68px; left: 0; right: 0;
+    background: rgba(6,6,10,0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border); z-index: 99;
+    flex-direction: column; padding: 24px; gap: 4px;
+  }
+  .nav-drawer.open { display: flex; }
+  .nav-drawer a { color: var(--text-muted); text-decoration: none; font-size: 16px; font-weight: 500; padding: 12px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
+  .nav-drawer a:last-child { border-bottom: none; }
+  .nav-drawer a:hover { color: var(--text); }
+
+  /* SHARED BUTTONS */
+  .btn-primary {
+    padding: 14px 32px; background: var(--accent); color: #fff; border-radius: 7px;
+    text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 15px;
+    font-weight: 600; letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+  .btn-ghost {
+    padding: 13px 30px; border: 1px solid var(--border-hover); color: var(--text); border-radius: 7px;
+    text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-size: 15px;
+    font-weight: 500; transition: border-color 0.2s, background 0.2s; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--accent); background: oklch(65% 0.24 280 / 0.06); }
+
+  /* FOOTER */
+  footer { background: var(--bg); border-top: 1px solid var(--border); padding: 48px; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+  .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .footer-logo-mark { width: 24px; height: 24px; border-radius: 50%; overflow: hidden; }
+  .footer-logo-mark img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+  .footer-wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; }
+  .footer-copy { font-size: 13px; color: var(--text-muted); }
+  .footer-links { display: flex; gap: 28px; flex-wrap: wrap; }
+  .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+
+  /* SCROLL ANIMATIONS */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* CHATBOT WIDGET */
+  #chat-btn {
+    position: fixed; bottom: 28px; right: 28px; z-index: 200;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--accent); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 24px oklch(65% 0.24 280 / 0.4);
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  #chat-btn:hover { transform: scale(1.08); opacity: 0.92; }
+  #chat-btn svg { width: 24px; height: 24px; fill: #fff; }
+  #chat-panel {
+    position: fixed; bottom: 96px; right: 28px; z-index: 200;
+    width: 360px; max-height: 520px;
+    background: var(--bg2); border: 1px solid var(--border-hover);
+    border-radius: 16px; overflow: hidden;
+    display: none; flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  #chat-panel.open { display: flex; }
+  .chat-header {
+    padding: 16px 20px;
+    background: var(--bg3); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  }
+  .chat-avatar img { width: 36px; height: 36px; object-fit: cover; }
+  .chat-header-info { flex: 1; }
+  .chat-header-name { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; }
+  .chat-header-sub { font-size: 12px; color: var(--text-muted); }
+  .chat-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 4px; transition: color 0.2s; }
+  .chat-close:hover { color: var(--text); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+  .chat-msg { max-width: 85%; }
+  .chat-msg.bot { align-self: flex-start; }
+  .chat-msg.user { align-self: flex-end; }
+  .chat-bubble {
+    padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.55;
+  }
+  .bot .chat-bubble { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; }
+  .user .chat-bubble { background: var(--accent); color: #fff; border-radius: 12px 4px 12px 12px; }
+  .chat-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; width: fit-content; }
+  .chat-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); animation: typingDot 1.2s infinite; }
+  .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,60%,100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+  .chat-input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--bg3); }
+  #chat-input {
+    flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+    outline: none; resize: none; transition: border-color 0.2s;
+  }
+  #chat-input:focus { border-color: oklch(65% 0.24 280 / 0.5); }
+  #chat-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+  #chat-send {
+    background: var(--accent); border: none; border-radius: 8px;
+    width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.2s; flex-shrink: 0;
+  }
+  #chat-send:hover { opacity: 0.88; }
+  #chat-send svg { width: 16px; height: 16px; fill: #fff; }
+  #chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .nav-cta { display: none; }
+    .nav-hamburger { display: flex; }
+    footer { padding: 32px 20px; }
+    .footer-inner { flex-direction: column; gap: 20px; }
+    .footer-links { gap: 16px; }
+    #chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; }
+    #chat-btn { right: 20px; bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">
+      <img src="/uploads/logo-1777571254206.jpeg" alt="Kodek logo">
+    </div>
+    <span class="nav-wordmark">KODEK</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/#verticals">What We Build</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#portfolio">Work</a></li>
+    <li><a href="/#about">About</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/#careers">Careers</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+  <a href="/#contact" class="nav-cta">Start a Project</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <a href="/#verticals" onclick="closeDrawer()">What We Build</a>
+  <a href="/#services" onclick="closeDrawer()">Services</a>
+  <a href="/#portfolio" onclick="closeDrawer()">Work</a>
+  <a href="/#about" onclick="closeDrawer()">About</a>
+  <a href="/blog" onclick="closeDrawer()">Blog</a>
+  <a href="/#careers" onclick="closeDrawer()">Careers</a>
+  <a href="/#contact" onclick="closeDrawer()">Contact</a>
+  <a href="/#contact" class="btn-primary" style="margin-top:8px;text-align:center;" onclick="closeDrawer()">Start a Project</a>
+</div>
+
+<slot />
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo-mark">
+          <img src="/uploads/logo-1777571254206.jpeg" alt="Kodek">
+        </div>
+        <span class="footer-wordmark">KODEK</span>
+      </div>
+      <div class="footer-copy">© 2026 Kodekaromas Technologies Pvt. Ltd. — AI &amp; Technology Research</div>
+    </div>
+    <div class="footer-links">
+      <a href="/#verticals">What We Build</a>
+      <a href="/#services">Services</a>
+      <a href="/#portfolio">Work</a>
+      <a href="/blog">Blog</a>
+      <a href="/#careers">Careers</a>
+      <a href="/#about">About</a>
+      <a href="/#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- CHATBOT -->
+<button id="chat-btn" aria-label="Open chat" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+</button>
+
+<div id="chat-panel" role="dialog" aria-label="Chat with Kody">
+  <div class="chat-header">
+    <div class="chat-avatar">
+      <img src="/uploads/logo-1777571254206.jpeg" alt="Kody">
+    </div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Kody</div>
+      <div class="chat-header-sub">Kodek AI Assistant</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()" aria-label="Close chat">×</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <textarea id="chat-input" placeholder="Ask about our services..." rows="1" aria-label="Type your message"></textarea>
+    <button id="chat-send" onclick="sendMessage()" aria-label="Send message">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // ---- MOBILE NAV ----
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('nav-drawer');
+
+  hamburger.addEventListener('click', () => {
+    const open = drawer.classList.toggle('open');
+    hamburger.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', String(open));
+  });
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+
+  document.addEventListener('click', e => {
+    if (!drawer.contains(e.target) && !hamburger.contains(e.target)) closeDrawer();
+  });
+
+  // ---- SCROLL ANIMATIONS ----
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ---- CHATBOT ----
+  let chatOpen = false;
+  const chatMessages = [];
+  const panel = document.getElementById('chat-panel');
+  const messagesEl = document.getElementById('chat-messages');
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    panel.classList.toggle('open', chatOpen);
+    if (chatOpen && messagesEl.children.length === 0) {
+      appendBotMsg("Hi! I'm Kody, Kodek's AI assistant. Ask me anything about our services, products, or how we can help with your project.");
+    }
+    if (chatOpen) setTimeout(() => input.focus(), 100);
+  }
+
+  function appendBotMsg(text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg bot';
+    div.innerHTML = `<div class="chat-bubble">${text}</div>`;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function appendUserMsg(text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg user';
+    div.innerHTML = `<div class="chat-bubble">${escHtml(text)}</div>`;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'chat-msg bot';
+    div.id = 'typing-indicator';
+    div.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text || sendBtn.disabled) return;
+    input.value = '';
+    input.style.height = 'auto';
+
+    appendUserMsg(text);
+    chatMessages.push({ role: 'user', content: text });
+
+    sendBtn.disabled = true;
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatMessages }),
+      });
+      const data = await res.json();
+      const reply = data.content || "Sorry, I'm having trouble connecting right now. Please reach out to sales@kodek.in directly.";
+      removeTyping();
+      appendBotMsg(reply);
+      chatMessages.push({ role: 'assistant', content: reply });
+    } catch {
+      removeTyping();
+      appendBotMsg("Sorry, something went wrong. Please email us at <a href='mailto:sales@kodek.in' style='color:var(--accent2)'>sales@kodek.in</a>.");
+    }
+    sendBtn.disabled = false;
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  });
+
+  // Netlify Identity redirect for CMS admin
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', user => {
+      if (!user) {
+        window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
+      }
+    });
+  }
+
+  // Persist chat history in sessionStorage
+  window.addEventListener('beforeunload', () => {
+    if (chatMessages.length) sessionStorage.setItem('kody-chat', JSON.stringify(chatMessages));
+  });
+
+  const saved = sessionStorage.getItem('kody-chat');
+  if (saved) {
+    try {
+      const msgs = JSON.parse(saved);
+      msgs.forEach(m => {
+        if (m.role === 'user') appendUserMsg(m.content);
+        else appendBotMsg(m.content);
+        chatMessages.push(m);
+      });
+    } catch {}
+  }
+</script>
+</body>
+</html>

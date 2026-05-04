@@ -1,0 +1,32 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: public/uploads
+public_folder: /uploads
+
+site_url: https://kodek.in
+display_url: https://kodek.in
+logo_url: /uploads/logo-1777571254206.jpeg
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Publish Date, name: date, widget: datetime }
+      - label: Category
+        name: category
+        widget: select
+        options:
+          - AI Research
+          - AR/VR
+          - Simulation
+          - Game Dev
+          - Architecture
+      - { label: Description, name: description, widget: text }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }

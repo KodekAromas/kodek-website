@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const catColors: Record<string, string> = {
+  'AI Research': 'oklch(65% 0.24 280)',
+  'AR/VR': 'oklch(72% 0.16 198)',
+  'Simulation': 'oklch(75% 0.18 160)',
+  'Game Dev': 'oklch(72% 0.22 30)',
+  'Architecture': 'oklch(72% 0.18 250)',
+};
+
+const catBg: Record<string, string> = {
+  'AI Research': 'linear-gradient(135deg,#0a0614,#0e0a20)',
+  'AR/VR': 'linear-gradient(135deg,#060a10,#0c1018)',
+  'Simulation': 'linear-gradient(135deg,#060e08,#081408)',
+  'Game Dev': 'linear-gradient(135deg,#0e0a06,#1a1008)',
+  'Architecture': 'linear-gradient(135deg,#06080e,#0a0c14)',
+};
+---
+
+<Base title="Blog — Kodek" description="Articles, research notes, and technical deep-dives from the Kodek team on AI, simulation, AR/VR, and immersive computing.">
+<style>
+  .blog-page { padding: 140px 48px 100px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .section-title { font-size: clamp(28px, 3.5vw, 46px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 20px; }
+  .section-sub { font-size: 17px; color: var(--text-muted); max-width: 560px; line-height: 1.7; font-weight: 300; }
+  .geo-line { width: 40px; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 1px; margin-bottom: 20px; }
+  .section-header { margin-bottom: 64px; }
+  .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .blog-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg2); transition: border-color 0.3s, transform 0.3s; text-decoration: none; display: block; }
+  .blog-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .blog-thumb { height: 160px; display: flex; align-items: center; justify-content: center; }
+  .blog-thumb-label { font-family: monospace; font-size: 11px; color: var(--text-muted); opacity: 0.4; text-align: center; }
+  .blog-body { padding: 24px; }
+  .blog-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .blog-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 10px; line-height: 1.35; color: var(--text); }
+  .blog-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+  .blog-date { font-size: 12px; color: var(--text-muted); opacity: 0.6; }
+  .empty-state { text-align: center; padding: 80px 24px; border: 1px solid var(--border); border-radius: 12px; }
+  .empty-state p { font-size: 17px; color: var(--text-muted); margin-bottom: 28px; }
+  @media (max-width: 1100px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) { .blog-page { padding: 120px 20px 64px; } .blog-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="blog-page">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Blog</div>
+      <div class="geo-line"></div>
+      <h1 class="section-title">Thinking out loud.</h1>
+      <p class="section-sub">Articles, research notes, and technical deep-dives from the Kodek team — on AI, simulation, AR/VR, game systems, and the future of immersive computing.</p>
+    </div>
+
+    {posts.length > 0 ? (
+      <div class="blog-grid">
+        {posts.map(post => (
+          <a href={`/blog/${post.slug}`} class="blog-card">
+            <div class="blog-thumb" style={`background:${catBg[post.data.category] ?? 'linear-gradient(135deg,#0a0614,#0e0a20)'}`}>
+              <div class="blog-thumb-label">{post.data.category.toLowerCase()}</div>
+            </div>
+            <div class="blog-body">
+              <div class="blog-cat" style={`color:${catColors[post.data.category]}`}>{post.data.category}</div>
+              <div class="blog-title">{post.data.title}</div>
+              <div class="blog-desc">{post.data.description}</div>
+              <div class="blog-date">{post.data.date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>Our first articles are on their way — check back soon.</p>
+        <a href="/#contact" style="display:inline-block;padding:13px 30px;border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:7px;text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:500;transition:border-color 0.2s">Get notified when we publish →</a>
+      </div>
+    )}
+  </div>
+</div>
+</Base>
