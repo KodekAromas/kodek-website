@@ -33,27 +33,74 @@ Guidelines:
 - Don't make up facts about Kodek. Stick to what's above.
 - If asked something you don't know, say so honestly and offer to connect them with the team.`;
 
+// Rate limiting: max 10 requests per IP per 60 seconds
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+
+const ipStore = new Map<string, { count: number; windowStart: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = ipStore.get(ip);
+
+  if (!entry || now - entry.windowStart > RATE_WINDOW_MS) {
+    ipStore.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+
+  if (entry.count >= RATE_LIMIT) return true;
+
+  entry.count++;
+  return false;
+}
+
+// Allowed origins — only requests from kodek.in are accepted
+const ALLOWED_ORIGINS = [
+  'https://kodek.in',
+  'https://www.kodek.in',
+  'https://kodekaromas.github.io',
+  'http://localhost:4321',
+];
+
 export default async function handler(req: Request) {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
+  }
+
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
+  // Origin check — block requests not coming from kodek.in
   const origin = req.headers.get('origin') || '';
-  const allowedOrigins = ['https://kodek.in', 'https://www.kodek.in', 'http://localhost:4321'];
-  const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+  if (!ALLOWED_ORIGINS.includes(origin)) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': corsOrigin,
-    'Access-Control-Allow-Methods': 'POST',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  // IP-based rate limiting
+  const ip =
+    req.headers.get('x-nf-client-connection-ip') ||
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    'unknown';
+
+  if (isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: 'Too many requests. Please wait a moment before trying again.' }),
+      { status: 429, headers: { ...corsHeaders(req), 'Retry-After': '60' } }
+    );
+  }
 
   try {
     const { messages } = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
-      return new Response(JSON.stringify({ error: 'Invalid messages' }), { status: 400, headers });
+      return new Response(JSON.stringify({ error: 'Invalid messages' }), {
+        status: 400,
+        headers: corsHeaders(req),
+      });
     }
 
     const sanitized = messages.slice(-20).map((m: { role: string; content: string }) => ({
@@ -69,11 +116,28 @@ export default async function handler(req: Request) {
     });
 
     const content = response.content[0].type === 'text' ? response.content[0].text : '';
-    return new Response(JSON.stringify({ content }), { status: 200, headers });
+    return new Response(JSON.stringify({ content }), {
+      status: 200,
+      headers: corsHeaders(req),
+    });
   } catch (err) {
     console.error('Chat function error:', err);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: corsHeaders(req),
+    });
   }
+}
+
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
 }
 
 export const config = { path: '/api/chat' };
