@@ -2,8 +2,6 @@ import OpenAI from 'openai';
 
 export const runtime = 'edge';
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const SYSTEM_PROMPT = `You are Kody, the AI assistant for Kodek (Kodekaromas Technologies Pvt. Ltd.), an AI and technology research company headquartered in Bhubaneswar, Odisha, India. You help website visitors learn about Kodek's services and figure out if Kodek is the right partner for their project.
 
 Kodek builds across five verticals:
@@ -56,6 +54,7 @@ const ALLOWED_ORIGINS = [
   'https://kodek.in',
   'https://www.kodek.in',
   'https://kodekaromas.github.io',
+  'https://kodek-website.vercel.app',
   'http://localhost:4321',
 ];
 
@@ -71,6 +70,7 @@ function corsHeaders(req: Request): Record<string, string> {
 }
 
 export default async function handler(req: Request): Promise<Response> {
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
