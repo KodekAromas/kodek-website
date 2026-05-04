@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
 export const runtime = 'edge';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const SYSTEM_PROMPT = `You are Kody, the AI assistant for Kodek (Kodekaromas Technologies Pvt. Ltd.), an AI and technology research company headquartered in Bhubaneswar, Odisha, India. You help website visitors learn about Kodek's services and figure out if Kodek is the right partner for their project.
 
@@ -116,14 +116,13 @@ export default async function handler(req: Request): Promise<Response> {
       content: String(m.content).slice(0, 2000),
     }));
 
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const response = await client.chat.completions.create({
+      model: 'gpt-4o-mini',
       max_tokens: 500,
-      system: SYSTEM_PROMPT,
-      messages: sanitized,
+      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...sanitized],
     });
 
-    const content = response.content[0].type === 'text' ? response.content[0].text : '';
+    const content = response.choices[0]?.message?.content ?? '';
     return new Response(JSON.stringify({ content }), { status: 200, headers: corsHeaders(req) });
   } catch (err) {
     console.error('Chat error:', err);
