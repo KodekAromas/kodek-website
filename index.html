@@ -1567,5 +1567,186 @@ async function handleSubmit(e) {
   }
 }
 </script>
+
+<!-- CHAT BUBBLE -->
+<style>
+  #chat-bubble { position: fixed; bottom: 28px; right: 28px; z-index: 200; }
+  #chat-toggle {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: oklch(65% 0.24 280); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 24px oklch(65% 0.24 280 / 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #chat-toggle:hover { transform: scale(1.08); box-shadow: 0 6px 32px oklch(65% 0.24 280 / 0.55); }
+  #chat-toggle.open .icon-chat { display: none; }
+  #chat-toggle:not(.open) .icon-close { display: none; }
+  #chat-window {
+    position: absolute; bottom: 68px; right: 0; width: 340px;
+    background: #0c0c12; border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; box-shadow: 0 16px 60px rgba(0,0,0,0.6);
+    display: flex; flex-direction: column; overflow: hidden;
+    opacity: 0; transform: translateY(12px) scale(0.97); pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  #chat-window.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+  .chat-header {
+    display: flex; align-items: center; gap: 10px; padding: 16px 18px;
+    background: #111118; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+  }
+  .chat-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: oklch(65% 0.24 280 / 0.15);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .chat-header-name { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #f0eee8; }
+  .chat-header-sub { font-size: 11px; color: #8a8898; }
+  .chat-status { width: 7px; height: 7px; border-radius: 50%; background: oklch(72% 0.16 198); margin-left: auto; flex-shrink: 0; }
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    min-height: 220px; max-height: 320px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  .chat-msg { display: flex; flex-direction: column; gap: 4px; max-width: 86%; }
+  .chat-msg.user { align-self: flex-end; align-items: flex-end; }
+  .chat-msg.bot  { align-self: flex-start; align-items: flex-start; }
+  .chat-bubble-inner { padding: 10px 13px; border-radius: 12px; font-size: 13.5px; line-height: 1.55; }
+  .chat-msg.user .chat-bubble-inner { background: oklch(65% 0.24 280); color: #fff; border-bottom-right-radius: 4px; }
+  .chat-msg.bot  .chat-bubble-inner { background: #1a1a24; color: #d8d6d0; border-bottom-left-radius: 4px; }
+  .chat-typing { display: flex; gap: 4px; align-items: center; padding: 10px 13px; }
+  .chat-typing span { width: 6px; height: 6px; border-radius: 50%; background: #8a8898; display: inline-block; animation: typingDot 1.2s infinite; }
+  .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,60%,100%{transform:translateY(0);opacity:0.4;} 30%{transform:translateY(-5px);opacity:1;} }
+  .chat-input-row {
+    display: flex; gap: 8px; align-items: flex-end; padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; background: #0c0c12;
+  }
+  #chat-input {
+    flex: 1; background: #111118; border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 8px; padding: 9px 12px; color: #f0eee8;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    outline: none; resize: none; min-height: 38px; max-height: 96px; line-height: 1.45;
+    transition: border-color 0.2s;
+  }
+  #chat-input:focus { border-color: oklch(65% 0.24 280 / 0.5); }
+  #chat-input::placeholder { color: #8a8898; opacity: 0.6; }
+  #chat-send {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    background: oklch(65% 0.24 280); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: opacity 0.2s;
+  }
+  #chat-send:hover { opacity: 0.85; }
+  #chat-send:disabled { opacity: 0.4; cursor: default; }
+  @media (max-width: 400px) { #chat-window { width: calc(100vw - 32px); right: -8px; } }
+</style>
+
+<div id="chat-bubble">
+  <div id="chat-window" role="dialog" aria-label="Chat with Kody">
+    <div class="chat-header">
+      <div class="chat-avatar">
+        <svg width="16" height="16" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" fill="oklch(65% 0.24 280)"/><circle cx="11" cy="3" r="1.5" fill="oklch(65% 0.24 280)" opacity="0.6"/><circle cx="11" cy="19" r="1.5" fill="oklch(65% 0.24 280)" opacity="0.6"/><circle cx="3" cy="11" r="1.5" fill="oklch(65% 0.24 280)" opacity="0.6"/><circle cx="19" cy="11" r="1.5" fill="oklch(65% 0.24 280)" opacity="0.6"/><line x1="11" y1="8" x2="11" y2="4.5" stroke="oklch(65% 0.24 280)" stroke-width="1" opacity="0.5"/><line x1="11" y1="14" x2="11" y2="17.5" stroke="oklch(65% 0.24 280)" stroke-width="1" opacity="0.5"/><line x1="8" y1="11" x2="4.5" y2="11" stroke="oklch(65% 0.24 280)" stroke-width="1" opacity="0.5"/><line x1="14" y1="11" x2="17.5" y2="11" stroke="oklch(65% 0.24 280)" stroke-width="1" opacity="0.5"/></svg>
+      </div>
+      <div>
+        <div class="chat-header-name">Kody</div>
+        <div class="chat-header-sub">Kodek AI Assistant</div>
+      </div>
+      <div class="chat-status"></div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg bot">
+        <div class="chat-bubble-inner">Hi! I'm Kody, Kodek's AI assistant. Ask me anything about our services, products, or how we can help your project. 👋</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <textarea id="chat-input" placeholder="Ask Kody anything…" rows="1"></textarea>
+      <button id="chat-send" aria-label="Send message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <button id="chat-toggle" aria-label="Open chat" aria-expanded="false">
+    <svg class="icon-chat" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<script>
+(function() {
+  const toggle = document.getElementById('chat-toggle');
+  const win    = document.getElementById('chat-window');
+  const input  = document.getElementById('chat-input');
+  const send   = document.getElementById('chat-send');
+  const msgs   = document.getElementById('chat-messages');
+  let open = false, history = [], loading = false;
+
+  toggle.addEventListener('click', () => {
+    open = !open;
+    toggle.classList.toggle('open', open);
+    win.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open);
+    if (open) setTimeout(() => input.focus(), 200);
+  });
+
+  function scrollBottom() { msgs.scrollTop = msgs.scrollHeight; }
+
+  function addMsg(role, text) {
+    const wrap = document.createElement('div');
+    wrap.className = `chat-msg ${role}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble-inner';
+    bubble.textContent = text;
+    wrap.appendChild(bubble);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function showTyping() {
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg bot'; wrap.id = 'typing-indicator';
+    wrap.innerHTML = '<div class="chat-bubble-inner chat-typing"><span></span><span></span><span></span></div>';
+    msgs.appendChild(wrap); scrollBottom();
+  }
+
+  function removeTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text || loading) return;
+    loading = true; send.disabled = true;
+    input.value = ''; input.style.height = 'auto';
+    addMsg('user', text);
+    history.push({ role: 'user', content: text });
+    showTyping();
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      removeTyping();
+      if (res.status === 429) {
+        addMsg('bot', "You're sending messages too fast. Please wait a moment and try again.");
+      } else if (!res.ok) {
+        addMsg('bot', 'Something went wrong. Please try again or reach us at sales@kodek.in.');
+      } else {
+        const data = await res.json();
+        const reply = data.content || "Sorry, I didn't get a response. Try again!";
+        addMsg('bot', reply);
+        history.push({ role: 'assistant', content: reply });
+      }
+    } catch {
+      removeTyping();
+      addMsg('bot', 'Connection error. Please check your internet and try again.');
+    }
+    loading = false; send.disabled = false; input.focus();
+  }
+
+  send.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+  input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 96) + 'px'; });
+})();
+</script>
 </body>
 </html>
