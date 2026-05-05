@@ -10,7 +10,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.55.0",
     "@astrojs/vercel": "^10.0.6",
-    "astro": "^5.7.0",
+    "astro": "^6.2.2",
     "openai": "^6.35.0"
   },
   "devDependencies": {
