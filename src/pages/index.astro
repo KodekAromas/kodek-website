@@ -6,7 +6,7 @@ import Base from '../layouts/Base.astro';
 <style>
   /* HERO */
   #hero {
-    position: relative; height: 100vh; min-height: 700px;
+    position: relative; height: 100vh; min-height: 600px;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
     padding-top: 68px;
   }
@@ -217,14 +217,31 @@ import Base from '../layouts/Base.astro';
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
-    section { padding: 64px 20px; }
-    .stats-strip { padding: 32px 20px; gap: 40px; }
-    .verticals-grid { grid-template-columns: 1fr 1fr; }
+    section { padding: 56px 20px; }
+    .stats-strip { padding: 28px 20px; gap: 32px; }
+    .stats-strip .stat-num { font-size: 28px; }
+    /* Single-column verticals on mobile */
+    .verticals-grid { grid-template-columns: 1fr; }
+    .vertical-card { padding: 28px 20px; }
     .products-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
     .packages-grid { grid-template-columns: 1fr; }
     .portfolio-grid, .blog-grid, .careers-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
     .careers-open { flex-direction: column; }
+    /* Values + about grid single column */
+    .values-grid { grid-template-columns: 1fr; }
+    .about-grid { gap: 48px; }
+    /* Section headers */
+    .section-header { margin-bottom: 40px; }
+    /* Product cards */
+    .product-card { padding: 32px 24px; }
+    /* Packages */
+    .pkg-card { padding: 28px 22px; }
+    /* Contact */
+    .contact-grid { gap: 48px; }
+    /* Careers */
+    .career-card { padding: 24px 20px; }
+    .careers-open { padding: 24px 20px; }
   }
 </style>
 
@@ -718,13 +735,29 @@ import Base from '../layouts/Base.astro';
   const canvas = document.getElementById('hero-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, nodes = [], mouse = { x: -999, y: -999 };
-  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  const isMobile = () => window.innerWidth < 768;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
   window.addEventListener('resize', resize); resize();
-  const NODE_COUNT = 80, MAX_DIST = 140;
+  const NODE_COUNT = isMobile() ? 30 : 80;
+  const MAX_DIST = isMobile() ? 110 : 140;
   function makeNode() { return { x: Math.random()*W, y: Math.random()*H, vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.4, r: Math.random()*1.8+0.8 }; }
   for (let i = 0; i < NODE_COUNT; i++) nodes.push(makeNode());
+  // Mouse (desktop)
   canvas.addEventListener('mousemove', e => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX-r.left; mouse.y = e.clientY-r.top; });
   canvas.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+  // Touch (mobile)
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    mouse.x = t.clientX - r.left;
+    mouse.y = t.clientY - r.top;
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { mouse.x = -999; mouse.y = -999; });
+  canvas.addEventListener('touchcancel', () => { mouse.x = -999; mouse.y = -999; });
   const c1=[124,106,240], c2=[76,201,224];
   function lerp(a,b,t){return a+(b-a)*t;}
   function draw() {

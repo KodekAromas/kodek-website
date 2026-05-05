@@ -195,7 +195,13 @@ const {
     footer { padding: 32px 20px; }
     .footer-inner { flex-direction: column; gap: 20px; }
     .footer-links { gap: 16px; }
-    #chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; }
+    /* Chat panel — full-width, capped height so it never overflows on short screens */
+    #chat-panel {
+      width: calc(100vw - 32px);
+      right: 16px;
+      bottom: 84px;
+      max-height: min(520px, calc(100dvh - 110px));
+    }
     #chat-btn { right: 20px; bottom: 20px; }
   }
 </style>
