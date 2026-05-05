@@ -59,7 +59,7 @@ const catBg: Record<string, string> = {
     {posts.length > 0 ? (
       <div class="blog-grid">
         {posts.map(post => (
-          <a href={`/blog/${post.slug}`} class="blog-card">
+          <a href={`/blog/${post.id}`} class="blog-card">
             <div class="blog-thumb" style={`background:${catBg[post.data.category] ?? 'linear-gradient(135deg,#0a0614,#0e0a20)'}`}>
               <div class="blog-thumb-label">{post.data.category.toLowerCase()}</div>
             </div>
