@@ -697,8 +697,6 @@ import Base from '../layouts/Base.astro';
       </div>
       <div class="fade-up">
         <form class="contact-form" id="contact-form" onsubmit="handleSubmit(event)">
-          <input type="hidden" name="_subject" value="New project inquiry from kodek.in">
-          <input type="hidden" name="_captcha" value="false">
           <div class="form-row">
             <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" placeholder="Your name" required></div>
             <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" placeholder="you@company.com" required></div>
@@ -797,9 +795,40 @@ function rrSwitch(idx){clearInterval(rrTimer);rrCur=idx;const img=document.getEl
 // ---- CONTACT FORM ----
 async function handleSubmit(e) {
   e.preventDefault();
-  const form=e.target,btn=form.querySelector('button[type="submit"]');
-  btn.textContent='Sending…';btn.disabled=true;
-  try{const res=await fetch('https://formsubmit.co/ajax/sales@kodek.in',{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});const json=await res.json();if(json.success==='true'||json.success===true||res.ok){document.getElementById('form-success').style.display='block';form.style.display='none';}else{btn.textContent='Failed — try again';btn.disabled=false;}}catch{btn.textContent='Failed — try again';btn.disabled=false;}
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const originalText = btn.textContent;
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const payload = {
+    name:     form.querySelector('#name')?.value?.trim() ?? '',
+    email:    form.querySelector('#email')?.value?.trim() ?? '',
+    company:  form.querySelector('#company')?.value?.trim() ?? '',
+    vertical: form.querySelector('#vertical')?.value ?? '',
+    message:  form.querySelector('#message')?.value?.trim() ?? '',
+  };
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (res.ok && json.success) {
+      document.getElementById('form-success').style.display = 'block';
+      form.style.display = 'none';
+    } else {
+      btn.textContent = 'Failed — try again';
+      btn.disabled = false;
+    }
+  } catch {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
 }
+// Expose to global scope — required because Astro bundles scripts as ES modules
+window.handleSubmit = handleSubmit;
 </script>
 </Base>

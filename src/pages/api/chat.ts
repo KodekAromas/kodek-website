@@ -34,77 +34,92 @@ Guidelines:
 - Don't make up facts about Kodek. Stick to what's above.
 - If asked something you don't know, say so honestly and offer to connect them with the team.`;
 
-// Rate limiting: 10 requests per IP per 60 seconds
-const RATE_LIMIT = 10;
-const RATE_WINDOW_MS = 60_000;
-const ipStore = new Map<string, { count: number; windowStart: number }>();
+// Allowed origins — only kodek.in and local dev can use this endpoint
+const ALLOWED_ORIGINS = [
+  'https://kodek.in',
+  'https://www.kodek.in',
+];
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = ipStore.get(ip);
-  if (!entry || now - entry.windowStart > RATE_WINDOW_MS) {
-    ipStore.set(ip, { count: 1, windowStart: now });
-    return false;
+function getAllowedOrigin(request: Request): string | null {
+  const origin = request.headers.get('origin') || '';
+  return ALLOWED_ORIGINS.includes(origin) ? origin : null;
+}
+
+function json(data: unknown, status = 200, origin?: string) {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS';
+    headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    headers['Vary'] = 'Origin';
   }
-  if (entry.count >= RATE_LIMIT) return true;
-  entry.count++;
-  return false;
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
+export const OPTIONS: APIRoute = async ({ request }) => {
+  const origin = getAllowedOrigin(request);
+  if (!origin) return new Response(null, { status: 403 });
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Vary': 'Origin',
+    },
   });
-}
+};
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || clientAddress || 'unknown';
-
-  if (isRateLimited(ip)) {
-    return json({ error: 'Too many requests. Please wait a moment before trying again.' }, 429);
+  // Block requests not from kodek.in
+  const origin = getAllowedOrigin(request);
+  if (!origin) {
+    return json({ error: 'Forbidden' }, 403);
   }
+
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    clientAddress ||
+    'unknown';
 
   const apiKey = import.meta.env.OPENAI_API_KEY;
   if (!apiKey) {
     console.error('OPENAI_API_KEY is not set');
-    return json({ error: 'Server configuration error.' }, 500);
+    return json({ error: 'Server configuration error.' }, 500, origin);
   }
 
   try {
-    const { messages } = await request.json();
+    const body = await request.json();
+    const { messages } = body as { messages: Array<{ role: string; content: string }> };
 
     if (!Array.isArray(messages) || messages.length === 0) {
-      return json({ error: 'Invalid messages' }, 400);
+      return json({ error: 'Invalid messages' }, 400, origin);
     }
 
-    const sanitized = messages.slice(-20).map((m: { role: string; content: string }) => ({
-      role: m.role === 'user' ? 'user' : 'assistant',
-      content: String(m.content).slice(0, 2000),
+    // Hard cap: reject oversized payloads before touching OpenAI
+    const totalChars = messages.reduce((sum, m) => sum + String(m.content || '').length, 0);
+    if (totalChars > 20_000) {
+      return json({ error: 'Request too large.' }, 400, origin);
+    }
+
+    const sanitized = messages.slice(-10).map((m) => ({
+      role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+      content: String(m.content).slice(0, 1000),
     }));
 
     const client = new OpenAI({ apiKey });
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
-      max_tokens: 500,
+      max_tokens: 300,           // tighter cap — Kody answers are short
+      temperature: 0.5,
+      user: ip,                  // lets OpenAI flag/block abusive users
       messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...sanitized],
     });
 
     const content = response.choices[0]?.message?.content ?? '';
-    return json({ content });
+    return json({ content }, 200, origin);
   } catch (err) {
     console.error('Chat error:', err);
-    return json({ error: 'Internal server error' }, 500);
+    return json({ error: 'Internal server error' }, 500, origin);
   }
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
 };
