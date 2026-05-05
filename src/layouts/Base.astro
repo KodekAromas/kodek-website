@@ -454,4 +454,173 @@ const {
 <div id="chat-panel" role="dialog" aria-label="Chat with Kody">
   <div class="chat-header">
     <div class="chat-avatar">
-      
+      <img src="/uploads/logo-1777571254206.jpeg" alt="Kody">
+    </div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Kody</div>
+      <div class="chat-header-sub">Kodek AI Assistant</div>
+    </div>
+    <button class="chat-close" id="chat-close-btn" aria-label="Close chat">×</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <textarea id="chat-input" placeholder="Ask about our services…" rows="1" aria-label="Type your message"></textarea>
+    <button id="chat-send" aria-label="Send message">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- HEADER SCROLL STATE ----
+  var header = document.getElementById('site-header');
+  function onScroll() {
+    if (!header) return;
+    if (window.scrollY > 8) header.classList.add('is-scrolled');
+    else header.classList.remove('is-scrolled');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---- MOBILE NAV ----
+  var nav = document.getElementById('primary-nav');
+  var toggle = document.getElementById('nav-toggle');
+  var panel = document.getElementById('mobile-panel');
+
+  function setNav(open) {
+    if (!nav || !toggle) return;
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  if (toggle) toggle.addEventListener('click', function () {
+    setNav(!nav.classList.contains('is-open'));
+  });
+  if (panel) panel.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (a) setNav(false);
+  });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 1024) setNav(false);
+  });
+
+  // ---- SCROLL ANIMATIONS ----
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-up').forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('.fade-up').forEach(function (el) { el.classList.add('visible'); });
+  }
+
+  // ---- CHATBOT ----
+  var chatOpen = false;
+  var chatMessages = [];
+  var chatPanel = document.getElementById('chat-panel');
+  var messagesEl = document.getElementById('chat-messages');
+  var input = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('chat-send');
+  var chatBtn = document.getElementById('chat-btn');
+  var closeBtn = document.getElementById('chat-close-btn');
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function appendBotMsg(text) {
+    var div = document.createElement('div');
+    div.className = 'chat-msg bot';
+    div.innerHTML = '<div class="chat-bubble">' + text + '</div>';
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  function appendUserMsg(text) {
+    var div = document.createElement('div');
+    div.className = 'chat-msg user';
+    div.innerHTML = '<div class="chat-bubble">' + escHtml(text) + '</div>';
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  function showTyping() {
+    var div = document.createElement('div');
+    div.className = 'chat-msg bot'; div.id = 'typing-indicator';
+    div.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  function removeTyping() { var t = document.getElementById('typing-indicator'); if (t) t.remove(); }
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    chatPanel.classList.toggle('open', chatOpen);
+    if (chatOpen && messagesEl.children.length === 0) {
+      appendBotMsg("Hi! I'm Kody, Kodek's AI assistant. Ask me anything about our services, products, or how we can help with your project.");
+    }
+    if (chatOpen) setTimeout(function () { input.focus(); }, 100);
+  }
+
+  async function sendMessage() {
+    var text = input.value.trim();
+    if (!text || sendBtn.disabled) return;
+    input.value = ''; input.style.height = 'auto';
+    appendUserMsg(text);
+    chatMessages.push({ role: 'user', content: text });
+    sendBtn.disabled = true; showTyping();
+    try {
+      var res = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatMessages }),
+      });
+      var data = await res.json();
+      var reply = data.content || "Sorry, I'm having trouble connecting right now. Please reach out to sales@kodek.in directly.";
+      removeTyping(); appendBotMsg(reply);
+      chatMessages.push({ role: 'assistant', content: reply });
+    } catch {
+      removeTyping();
+      appendBotMsg("Sorry, something went wrong. Please email us at <a href='mailto:sales@kodek.in' style='color:var(--accent-2)'>sales@kodek.in</a>.");
+    }
+    sendBtn.disabled = false;
+  }
+
+  if (chatBtn) chatBtn.addEventListener('click', toggleChat);
+  if (closeBtn) closeBtn.addEventListener('click', toggleChat);
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+  if (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    input.addEventListener('input', function () {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+    });
+  }
+
+  // Restore chat history from sessionStorage
+  var saved = sessionStorage.getItem('kody-chat');
+  if (saved) {
+    try {
+      var msgs = JSON.parse(saved);
+      msgs.forEach(function (m) {
+        if (m.role === 'user') appendUserMsg(m.content);
+        else appendBotMsg(m.content);
+        chatMessages.push(m);
+      });
+    } catch {}
+  }
+  window.addEventListener('beforeunload', function () {
+    if (chatMessages.length) sessionStorage.setItem('kody-chat', JSON.stringify(chatMessages));
+  });
+
+  // Expose to global scope for compatibility
+  window.toggleChat = toggleChat;
+  window.sendMessage = sendMessage;
+})();
+</script>
+</body>
+</html>

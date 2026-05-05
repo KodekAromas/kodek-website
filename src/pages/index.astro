@@ -1079,3 +1079,22 @@ import Base from '../layouts/Base.astro';
 })();
 </script>
 </Base>
+/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        var json = await res.json();
+        if (res.ok && json.success) {
+          document.getElementById('form-success').style.display = 'block';
+          form.style.display = 'none';
+        } else {
+          btn.textContent = 'Failed — try again'; btn.disabled = false;
+        }
+      } catch {
+        btn.textContent = orig; btn.disabled = false;
+      }
+    });
+  }
+})();
+</script>
+</Base>
