@@ -10,7 +10,7 @@ export interface Props {
 const {
   title = 'Kodek — AI & Technology Research',
   description = 'Kodek creates intelligent software, immersive AR/VR experiences, physics-based simulations, and interactive games for industries that demand more from technology.',
-  ogImage = 'https://kodek.in/uploads/logo-1777571254206.jpeg',
+  ogImage = 'https://kodek.in/og-image.png',
   type = 'website',
 } = Astro.props;
 
@@ -32,6 +32,26 @@ const orgSchema = {
   "foundingLocation": {
     "@type": "Place",
     "addressCountry": "IN"
+  },
+  "sameAs": [
+    "https://github.com/Kodekaromas-Technologies-Pvt-Ltd",
+    "https://www.linkedin.com/company/kodekaromas-technologies-private-limited/",
+    "https://www.instagram.com/kodekaromas"
+  ]
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Kodek",
+  "url": "https://kodek.in",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://kodek.in/?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
   }
 };
 ---
@@ -67,6 +87,8 @@ const orgSchema = {
 
 <!-- JSON-LD: Organization (global) -->
 <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+<!-- JSON-LD: WebSite + SearchAction -->
+<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
