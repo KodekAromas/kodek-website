@@ -2,12 +2,38 @@
 export interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
+  publishDate?: string;
 }
 
 const {
   title = 'Kodek — AI & Technology Research',
   description = 'Kodek creates intelligent software, immersive AR/VR experiences, physics-based simulations, and interactive games for industries that demand more from technology.',
+  ogImage = 'https://kodek.in/uploads/logo-1777571254206.jpeg',
+  type = 'website',
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, 'https://kodek.in').href;
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Kodek",
+  "legalName": "Kodekaromas Technologies Pvt. Ltd.",
+  "url": "https://kodek.in",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://kodek.in/uploads/logo-1777571254206.jpeg"
+  },
+  "description": "AI and technology research company building intelligent software, AR/VR experiences, physics-based simulations, and interactive games.",
+  "email": "sales@kodek.in",
+  "areaServed": "Worldwide",
+  "foundingLocation": {
+    "@type": "Place",
+    "addressCountry": "IN"
+  }
+};
 ---
 
 <!DOCTYPE html>
@@ -18,11 +44,29 @@ const {
 <meta name="theme-color" content="#06070b">
 <title>{title}</title>
 <meta name="description" content={description}>
+<link rel="canonical" href={canonicalURL}>
+<link rel="sitemap" href="/sitemap.xml">
+<link rel="icon" type="image/jpeg" href="/uploads/logo-1777571254206.jpeg">
+
+<!-- Open Graph -->
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>
-<meta property="og:type" content="website">
-<link rel="icon" type="image/jpeg" href="/uploads/logo-1777571254206.jpeg">
-<link rel="sitemap" href="/sitemap.xml">
+<meta property="og:type" content={type}>
+<meta property="og:url" content={canonicalURL}>
+<meta property="og:site_name" content="Kodek">
+<meta property="og:image" content={ogImage}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_IN">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={title}>
+<meta name="twitter:description" content={description}>
+<meta name="twitter:image" content={ogImage}>
+
+<!-- JSON-LD: Organization (global) -->
+<script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -443,7 +487,7 @@ const {
   </div>
   <div class="footer-bottom">
     <div>© 2026 Kodekaromas Technologies Pvt. Ltd.</div>
-    <div>Made in Bhubaneswar, India.</div>
+    <div>Made in India.</div>
   </div>
 </footer>
 
