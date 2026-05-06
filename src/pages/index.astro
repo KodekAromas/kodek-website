@@ -170,8 +170,6 @@ import Base from '../layouts/Base.astro';
   .pkg-letter { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
   .pkg-name { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 600; margin-bottom: 8px; }
   .pkg-desc { font-size: 13.5px; color: var(--text-2); line-height: 1.55; margin-bottom: 22px; min-height: 3em; }
-  .pkg-price { font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 3vw, 32px); font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -0.02em; }
-  .pkg-price-sub { font-size: 12.5px; color: var(--text-3); margin: 6px 0 22px; }
   .pkg-timeline {
     font-size: 12px; color: var(--text-2); padding: 8px 12px;
     background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r-sm);
@@ -510,18 +508,16 @@ import Base from '../layouts/Base.astro';
 <section id="services">
   <div class="container">
     <div class="section-header fade-up">
-      <span class="eyebrow">Services &amp; pricing</span>
+      <span class="eyebrow">Services we offer</span>
       <div class="geo-line"></div>
-      <h2 class="section-title">Choose your entry point.</h2>
-      <p class="section-sub">Four engagement tiers — from a rapid research spike to a full immersive technology suite. Every project is fixed-price and timeline-guaranteed.</p>
+      <h2 class="section-title">How we engage.</h2>
+      <p class="section-sub">Four engagement tiers — from a rapid research spike to a full immersive technology suite. Every engagement is scoped and priced collaboratively — reach out and we'll tailor it to your needs.</p>
     </div>
     <div class="packages-grid fade-up">
       <article class="pkg-card">
         <div class="pkg-letter">Package A</div>
         <h3 class="pkg-name">Research Spike</h3>
         <p class="pkg-desc">For teams exploring whether AI, simulation, AR/VR, or games can solve a specific problem.</p>
-        <div class="pkg-price">₹25,000</div>
-        <div class="pkg-price-sub">~$300 · Fixed price</div>
         <div class="pkg-timeline">⏱ 5–7 business days</div>
         <ul class="pkg-features">
           <li>Technical research sprint</li>
@@ -536,8 +532,6 @@ import Base from '../layouts/Base.astro';
         <div class="pkg-letter">Package B</div>
         <h3 class="pkg-name">Interactive Prototype</h3>
         <p class="pkg-desc">Working demo — AR experience, simulation, game prototype, or AI tool — ready to validate or present.</p>
-        <div class="pkg-price">₹80,000</div>
-        <div class="pkg-price-sub">~$1,000 · Fixed price</div>
         <div class="pkg-timeline">⏱ 14–21 business days</div>
         <ul class="pkg-features">
           <li>Full-stack interactive prototype</li>
@@ -552,8 +546,6 @@ import Base from '../layouts/Base.astro';
         <div class="pkg-letter">Package C</div>
         <h3 class="pkg-name">Production-Ready Product</h3>
         <p class="pkg-desc">A production-grade AI app, simulation, or AR/VR experience — ready to ship to real users.</p>
-        <div class="pkg-price">₹1,50,000</div>
-        <div class="pkg-price-sub">~$1,800 · Fixed price</div>
         <div class="pkg-timeline">⏱ 3–5 weeks</div>
         <ul class="pkg-features">
           <li>Full-stack development with auth</li>
@@ -569,8 +561,6 @@ import Base from '../layouts/Base.astro';
         <div class="pkg-letter">Package D</div>
         <h3 class="pkg-name">Full Immersive Suite</h3>
         <p class="pkg-desc">A complete AI + immersive technology system for enterprises, real estate developers, and large studios.</p>
-        <div class="pkg-price">₹3,00,000+</div>
-        <div class="pkg-price-sub">~$3,500+ · Custom scope</div>
         <div class="pkg-timeline">⏱ 5–8 weeks</div>
         <ul class="pkg-features">
           <li>AI software with AR/VR or simulation</li>
