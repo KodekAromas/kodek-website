@@ -204,7 +204,6 @@ const websiteSchema = {
     -webkit-backdrop-filter: saturate(140%) blur(14px);
     border-bottom: 1px solid transparent;
     transition: border-color var(--t-med) var(--ease), background var(--t-med) var(--ease);
-    overflow: hidden;
   }
   .site-header.is-scrolled {
     background: rgba(6,7,11,0.9);
@@ -268,11 +267,12 @@ const websiteSchema = {
   .mobile-panel {
     position: fixed; inset: 64px 0 0 0; z-index: 49;
     background: rgba(6,7,11,0.98); backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
     padding: 24px var(--gutter) 36px;
     display: none; overflow-y: auto;
   }
-  .nav.is-open + .mobile-panel { display: block; }
+  .mobile-panel.is-open { display: block; }
   .mobile-panel ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
   .mobile-panel a {
     display: block; padding: 14px 12px; border-radius: var(--r-sm);
@@ -483,19 +483,20 @@ const websiteSchema = {
       </button>
     </div>
   </nav>
-  <div class="mobile-panel" id="mobile-panel">
-    <ul>
-      <li><a href="/#verticals" id="mp-verticals">What We Build</a></li>
-      <li><a href="/#services" id="mp-services">Services</a></li>
-      <li><a href="/#portfolio" id="mp-portfolio">Work</a></li>
-      <li><a href="/#about" id="mp-about">About</a></li>
-      <li><a href="/blog" id="mp-blog">Blog</a></li>
-      <li><a href="/#careers" id="mp-careers">Careers</a></li>
-      <li><a href="/#contact" id="mp-contact">Contact</a></li>
-    </ul>
-    <a href="/#contact" class="btn btn-primary btn-lg" id="mp-cta">Start a Project</a>
-  </div>
 </header>
+
+<div class="mobile-panel" id="mobile-panel">
+  <ul>
+    <li><a href="/#verticals" id="mp-verticals">What We Build</a></li>
+    <li><a href="/#services" id="mp-services">Services</a></li>
+    <li><a href="/#portfolio" id="mp-portfolio">Work</a></li>
+    <li><a href="/#about" id="mp-about">About</a></li>
+    <li><a href="/blog" id="mp-blog">Blog</a></li>
+    <li><a href="/#careers" id="mp-careers">Careers</a></li>
+    <li><a href="/#contact" id="mp-contact">Contact</a></li>
+  </ul>
+  <a href="/#contact" class="btn btn-primary btn-lg" id="mp-cta">Start a Project</a>
+</div>
 
 <slot />
 
@@ -617,6 +618,7 @@ const websiteSchema = {
   function setNav(open) {
     if (!nav || !toggle) return;
     nav.classList.toggle('is-open', open);
+    if (panel) panel.classList.toggle('is-open', open);
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     document.body.style.overflow = open ? 'hidden' : '';
