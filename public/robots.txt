@@ -1,0 +1,13 @@
+# robots.txt — Kodek (kodek.in)
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Block API routes from crawlers
+Disallow: /api/
+
+# Block Netlify CMS admin panel
+Disallow: /admin/
+
+Sitemap: https://kodek.in/sitemap.xml
